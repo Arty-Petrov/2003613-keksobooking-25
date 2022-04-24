@@ -2,8 +2,6 @@ import { getData } from './api.js';
 import { enableElements, showAlert, debounce} from './util.js';
 import { createBalloonContent } from './map-balloon.js';
 
-const TIME_DELAY = 500;
-
 const initMapCoordinate = {
   lat: 35.683792,
   lng: 139.749698,
@@ -85,12 +83,12 @@ const putPinsToMap = () => {
   );
 };
 
-const resetOffersPinsLayer = function () {
+const resetOffersPinsLayer = () => {
   offerPinGroup.clearLayers();
   putPinsToMap();
 };
 
-const initMap = function() {
+const initMap = () => {
   const leafletObj = L.map('map-canvas');
   leafletObj.setView({
     lat: initMapCoordinate.lat,
@@ -123,6 +121,6 @@ mainPin.on('moveend', (evt) => {
   address.setAttribute('value', `широта: ${Number(evt.target.getLatLng().lat).toFixed(6)}, долгота: ${Number(evt.target.getLatLng().lng).toFixed(6)}`);
 });
 
-mapFilters.addEventListener('change', debounce(() => {resetOffersPinsLayer();}, TIME_DELAY));
+mapFilters.addEventListener('change', debounce(() => {resetOffersPinsLayer();}));
 
-export { initPinCoordinate, resetOffersPinsLayer, setMapDefault};
+export { initPinCoordinate, resetOffersPinsLayer, setMapDefault };

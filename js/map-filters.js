@@ -9,9 +9,7 @@ const filterFeatureList = mapFilters.querySelector('#housing-features');
 
 const getPropName = (filterElement) => filterElement.id.slice(filterElement.id.lastIndexOf('-') + 1);
 
-const getPropValue = function (item, filterElement) {
-  return item[getPropName(filterElement)];
-};
+const getPropValue = (item, filterElement) => item[getPropName(filterElement)];
 
 const checkItemPresence = (prop, filterElement) => {
   const propValue = getPropValue(prop, filterElement);
@@ -19,7 +17,7 @@ const checkItemPresence = (prop, filterElement) => {
   return  `${propValue}` === `${filterValue}`;
 };
 
-const checkItemPriceValueInFilterRange = function (prop, filterElement) {
+const checkItemPriceValueInFilterRange = (prop, filterElement) => {
   const filterValue = filterElement.value;
   const minValue = housigPrices[filterValue].min;
   const maxValue = housigPrices[filterValue].max;
@@ -37,7 +35,7 @@ const getFeaturesFilter = (filterElement) => {
   return checkedCheckboxes;
 };
 
-const checkItemFeatures = function (prop, filterElement) {
+const checkItemFeatures = (prop, filterElement) => {
   const checkedCheckboxes = getFeaturesFilter(filterElement);
   const propValue = getPropValue(prop, filterElement);
   let propValues = [];
@@ -64,38 +62,26 @@ const checkCheckboxesChecked = (filterElement) => {
   return featuresFiltersCount > 0;
 };
 
-const filterDataElement = function (item) {
+const filterDataElement = (item) => {
   const {offer: prop} = item;
-
-  if (checkFilterIsActive(filterType)) {
-    if (!checkItemPresence(prop, filterType)){
-      return false;
-    }
+  if (checkFilterIsActive(filterType) && !checkItemPresence(prop, filterType)) {
+    return false;
   }
-  if (checkFilterIsActive(filterPrice)) {
-    if (!checkItemPriceValueInFilterRange(prop, filterPrice)){
-      return false;
-    }
+  if (checkFilterIsActive(filterPrice) && !checkItemPriceValueInFilterRange(prop, filterPrice)) {
+    return false;
   }
-  if (checkFilterIsActive(filterRoomsCount)) {
-    if (!checkItemPresence(prop, filterRoomsCount)){
-      return false;
-    }
+  if (checkFilterIsActive(filterRoomsCount) && !checkItemPresence(prop, filterRoomsCount)) {
+    return false;
   }
-  if (checkFilterIsActive(filterGuestsCount)) {
-    if (!checkItemPresence(prop, filterGuestsCount)){
-      return false;
-    }
+  if (checkFilterIsActive(filterGuestsCount) && !checkItemPresence(prop, filterGuestsCount) ) {
+    return false;
   }
   if (checkCheckboxesChecked(filterFeatureList)) {
     return checkItemFeatures(prop, filterFeatureList);
   }
-
   return true;
 };
 
-const filterData = function (data) {
-  return data.filter((item) => filterDataElement(item));
-};
+const filterData = (data) => data.filter((item) => filterDataElement(item));
 
 export {filterData};

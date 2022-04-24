@@ -1,14 +1,16 @@
 import { getRandomArrayRange } from './util.js';
 import { filterData } from './map-filters.js';
+
 const POST_ADDRESS = 'https://25.javascript.pages.academy/keksobooking';
 const GET_ADDRESS = 'https://25.javascript.pages.academy/keksobooking/data';
+const MAX_OFFERS_COUNT = 10;
 
 const getData = (onSuccess, onFail) => {
   fetch(GET_ADDRESS)
     .then((response) => {
       if (response.ok) {
         return response.json()
-          .then((dataSet) => getRandomArrayRange(dataSet, 10, filterData))
+          .then((dataSet) => getRandomArrayRange(dataSet, MAX_OFFERS_COUNT, filterData))
           .then((dataSet) => onSuccess(dataSet))
           .catch(() => {
             onFail('Не удалось обработать данные');

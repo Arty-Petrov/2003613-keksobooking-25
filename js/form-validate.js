@@ -1,5 +1,7 @@
-import { isValidStringLength, isValidNumRange } from './util.js';
 import { lodgingTypesMinPrice, lodgingTypesMaxPrice } from './enum-data.js';
+
+const MIN_STRING_LENGTH = 30;
+const MAX_STRING_LENGTH = 100;
 
 const adForm = document.querySelector('.ad-form');
 const title = adForm.querySelector('#title');
@@ -19,18 +21,22 @@ const formPristine = new Pristine(
   },
 );
 
-const validateTitle = (value) => isValidStringLength(value, 30, 100);
+const isValidStringLength = (str, min = 0, max = Infinity) => str.length >= min && str.length <= max;
+
+const isValidNumRange = (num, min = -Infinity, max = Infinity) => num >= min && num <= max;
+
+const validateTitle = (value) => isValidStringLength(value, MIN_STRING_LENGTH, MAX_STRING_LENGTH);
 
 const getTitleErrorMessage = (value) => {
   const symbolsCount = value.length;
   if (!symbolsCount) {
     return 'Заголовок не может быть пустым, введите минимум 30 символов.';
   }
-  if (symbolsCount < 30) {
-    return `Минимальная длина заголовка 30 символов, вы ввели всего ${symbolsCount}`;
+  if (symbolsCount < MIN_STRING_LENGTH) {
+    return `Минимальная длина заголовка ${MIN_STRING_LENGTH} символов, вы ввели всего ${symbolsCount}`;
   }
-  if (symbolsCount > 100) {
-    return `Максимальная длина заголовка 100 символов, вы ввели ${symbolsCount}`;
+  if (symbolsCount > MAX_STRING_LENGTH) {
+    return `Максимальная длина заголовка ${MAX_STRING_LENGTH} символов, вы ввели ${symbolsCount}`;
   }
 };
 

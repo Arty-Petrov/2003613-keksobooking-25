@@ -16,7 +16,7 @@ const createImageTag = (file) => {
   return picture;
 };
 
-const fileUploadHandler = function (fileUploader, previewContainer) {
+const fileUploadHandler = (fileUploader, previewContainer) => {
 
   const hasImgTag = previewContainer.children.length;
 
