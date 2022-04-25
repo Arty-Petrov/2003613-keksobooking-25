@@ -6,7 +6,7 @@ const CHECHOUT_TIMES = ['12:00', '13:00', '14:00',];
 
 const FEATURES_TYPES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner',];
 
-const LODGING_PROPERTIES = {
+const LodgingProperties = {
   bungalow: {
     fieldText: 'Бунгало',
     priceRange: {
@@ -43,10 +43,11 @@ const LODGING_PROPERTIES = {
     },
   },
 };
-const lodgingTypesMinPrice = Object.fromEntries(Object.entries(LODGING_PROPERTIES).map(([ key, val ]) => [ key, val.priceRange.min]));
-const lodgingTypesMaxPrice = Object.fromEntries(Object.entries(LODGING_PROPERTIES).map(([ key, val ]) => [ key, val.priceRange.max]));
 
-const HOUSING_CLASS_PRICE = {
+const lodgingTypesMinPrice = Object.fromEntries(Object.entries(LodgingProperties).map(([ key, val ]) => [ key, val.priceRange.min]));
+const lodgingTypesMaxPrice = Object.fromEntries(Object.entries(LodgingProperties).map(([ key, val ]) => [ key, val.priceRange.max]));
+
+const HousingClassPrice = {
   low: {
     min: 0,
     max: 10000,
@@ -66,8 +67,8 @@ export {
   CHECKIN_TIMES,
   CHECHOUT_TIMES,
   FEATURES_TYPES,
-  LODGING_PROPERTIES,
+  LodgingProperties,
   lodgingTypesMaxPrice,
   lodgingTypesMinPrice,
-  HOUSING_CLASS_PRICE,
+  HousingClassPrice,
 };

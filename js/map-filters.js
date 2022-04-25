@@ -1,4 +1,4 @@
-import { HOUSING_CLASS_PRICE as housigPrices } from './enum-data.js';
+import { HousingClassPrice } from './enum-data.js';
 
 const mapFilters = document.querySelector('.map__filters');
 const filterType = mapFilters.querySelector('#housing-type');
@@ -19,8 +19,8 @@ const checkItemPresence = (prop, filterElement) => {
 
 const checkItemPriceValueInFilterRange = (prop, filterElement) => {
   const filterValue = filterElement.value;
-  const minValue = housigPrices[filterValue].min;
-  const maxValue = housigPrices[filterValue].max;
+  const minValue = HousingClassPrice[filterValue].min;
+  const maxValue = HousingClassPrice[filterValue].max;
   const propValue = getPropValue(prop, filterElement);
   return propValue >= minValue && propValue < maxValue;
 };

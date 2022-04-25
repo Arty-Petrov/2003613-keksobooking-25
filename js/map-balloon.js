@@ -1,6 +1,6 @@
-import { LODGING_PROPERTIES } from './enum-data.js';
+import { LodgingProperties } from './enum-data.js';
 
-const lodgingTypesText = Object.fromEntries(Object.entries(LODGING_PROPERTIES).map(([ key, val ]) => [ key, val.fieldText]));
+const lodgingTypesText = Object.fromEntries(Object.entries(LodgingProperties).map(([ key, val ]) => [ key, val.fieldText]));
 
 const hasDefinedProperty = (obj, objProp) => (objProp in obj) || (obj[objProp] === !undefined);
 
