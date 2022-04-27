@@ -1,7 +1,7 @@
-import { disableElements } from './util.js';
+import { createAddressString } from './util.js';
 import { sendData, POST_ADDRESS } from './api.js';
 import { lodgingTypesMinPrice,lodgingTypesMaxPrice,} from './enum-data.js';
-import { initPinCoordinate, setMapDefault } from './map.js';
+import { initCoordinate, setMapDefault } from './map.js';
 import { formPristine } from './form-validate.js';
 
 const adForm = document.querySelector('.ad-form');
@@ -39,7 +39,7 @@ const initForm = (form) => {
 };
 
 const initAddress = () => {
-  address.setAttribute('value', `широта: ${initPinCoordinate.lat}, долгота: ${initPinCoordinate.lng}`);
+  address.setAttribute('value', createAddressString(initCoordinate.lat, initCoordinate.lng));
   address.setAttribute('readonly', true);
 };
 
@@ -58,12 +58,11 @@ const initRoomCountCapacity = () => {
 };
 
 noUiSlider.create(priceSlider, {
-  padding: [getMinLodgingPrice(), 0],
   range: {
     min: 0,
     max: getMaxLodgingPrice(),
   },
-  start: getMinLodgingPrice(),
+  start: 0,
   step: 1,
   connect: 'lower',
   format: {
@@ -76,19 +75,13 @@ noUiSlider.create(priceSlider, {
   },
 });
 
-const updateSliderPadding = (min, max) => {
-  priceSlider.noUiSlider.updateOptions({
-    padding: [min, max],
-  });};
-
 const updateSliderStart = (value) => {
   priceSlider.noUiSlider.updateOptions({
     start: value,
   });};
 
 const initSlider = () => {
-  updateSliderStart(getMinLodgingPrice());
-  updateSliderPadding(getMinLodgingPrice(), 100);
+  updateSliderStart(0);
 };
 
 const setFormDefault = () => {
@@ -109,15 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initRoomCountCapacity();
 });
 
-adForm.addEventListener('load', () => {
-  disableElements(adForm, mapFilters);
-});
-
-priceSlider.noUiSlider.on('start', () => {
-  updateSliderStart(getMinLodgingPrice());
-  updateSliderPadding(getMinLodgingPrice(), 0);
-});
-
 priceSlider.noUiSlider.on('slide', () => {
   lodgingPrice.value = priceSlider.noUiSlider.get();
   formPristine.validate();
@@ -125,7 +109,6 @@ priceSlider.noUiSlider.on('slide', () => {
 
 lodgingPrice.addEventListener('blur', () => {
   updateSliderStart(lodgingPrice.value);
-  updateSliderPadding(lodgingPrice.value, 0);
   priceSlider.noUiSlider.set(lodgingPrice.value);
   formPristine.validate();
 });
@@ -133,8 +116,6 @@ lodgingPrice.addEventListener('blur', () => {
 lodgingType.addEventListener('change', () => {
   const price = getMinLodgingPrice();
   lodgingPrice.placeholder = price;
-  updateSliderPadding(price, 0);
-  updateSliderStart(price);
   lodgingPrice.value = '';
 });
 
@@ -164,8 +145,8 @@ const unblockSubmitButton = () => {
   submitButton.disabled = false;
 };
 
-const successRoutine = function (evt, message) {
-  const routine = function () {
+const successRoutine = (evt, message) => {
+  const keyPressHandler = function () {
     if (evt.type === 'click' || evt.code === 'Escape'){
       setFormDefault();
       formPristine.reset();
@@ -175,28 +156,31 @@ const successRoutine = function (evt, message) {
     setFormDefault();
     setMapDefault();
   };
-  return routine();
+  return keyPressHandler();
 };
 
-const successMessageHandler = function (message) {
+const successMessageHandler = (message) => {
   document.addEventListener('click', (evt) => successRoutine(evt, message), {once: true});
   document.addEventListener('keydown', (evt) => successRoutine(evt, message), {once: true});
 };
 
-const errorRoutine = function (evt, message) {
-  const routine = function () {
-    if (evt.type === 'click' || evt.code === 'Escape'){
-      message.remove();
+const errorRoutine = () => {
+  const keyPressHandler = () =>{
+    if (event.type === 'click' || event.code === 'Escape'){
+      errorMessage.remove();
+      document.removeEventListener('click', errorRoutine);
+      document.removeEventListener('keydown', errorRoutine);
     }
+    unblockSubmitButton();
   };
-  return routine();
+  return keyPressHandler();
 };
 
-const errorMessageHandler = function (message) {
+const errorMessageHandler = (message) => {
   const button = (message.querySelector('.error__button'));
-  button.addEventListener('click', (evt) => errorRoutine(evt, message), {once: true});
-  document.addEventListener('click', (evt) => errorRoutine(evt, message), {once: true});
-  document.addEventListener('keydown', (evt) => errorRoutine(evt, message), {once: true});
+  button.addEventListener('click', errorRoutine, {once: true});
+  document.addEventListener('click', errorRoutine, {once: true});
+  document.addEventListener('keydown', errorRoutine, {once: true});
 };
 
 const showMessage = (message, handler) => {
@@ -214,8 +198,6 @@ adForm.addEventListener('submit', (evt) => {
       () => {showMessage(errorMessage, errorMessageHandler);},
       adForm
     );
-  } else {
-    showMessage(errorMessage, errorMessageHandler);
   }
 });
 

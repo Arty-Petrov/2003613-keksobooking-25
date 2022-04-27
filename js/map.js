@@ -1,13 +1,13 @@
 import { getData } from './api.js';
-import { enableElements, showAlert, debounce} from './util.js';
+import { createAddressString, enableElements, disableElements, showAlert, debounce} from './util.js';
 import { createBalloonContent } from './map-balloon.js';
 
-const initMapCoordinate = {
-  lat: 35.683792,
-  lng: 139.749698,
-};
+const MAP_ZOOM = 13;
+const MAP_TILES_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const MAP_ATRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+const ICON_URL = './img/main-pin.svg';
 
-const initPinCoordinate = {
+const initCoordinate = {
   lat: 35.683792,
   lng: 139.749698,
 };
@@ -17,19 +17,15 @@ const mapFilters = document.querySelector('.map__filters');
 const adForm = document.querySelector('.ad-form');
 const address = adForm.querySelector('#address');
 
-const cbMapOnLoadHandler = () => {
-  enableElements(adForm, mapFilters);
-};
+disableElements(adForm, mapFilters);
 
-const mapTileLayer = L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  },
-);
+const map = L.map('map-canvas').setView({
+  lat: initCoordinate.lat,
+  lng: initCoordinate.lng,
+}, MAP_ZOOM);
 
 const mainPinIcon = L.icon({
-  iconUrl: './img/main-pin.svg',
+  iconUrl: ICON_URL,
   iconSize: [52, 52],
   iconAnchor: [26, 0],
   shadowSize: [68, 95],
@@ -38,8 +34,8 @@ const mainPinIcon = L.icon({
 
 const mainPin = L.marker(
   {
-    lat: initPinCoordinate.lat,
-    lng: initPinCoordinate.lng,
+    lat: initCoordinate.lat,
+    lng: initCoordinate.lng,
   },
   {
     draggable: true,
@@ -47,7 +43,23 @@ const mainPin = L.marker(
   },
 );
 
+mainPin.addTo(map).on('load', enableElements(adForm));
+
+mainPin.on('moveend', (evt) => {
+  const lat = Number(evt.target.getLatLng().lat);
+  const lng = Number(evt.target.getLatLng().lng);
+  address.setAttribute('value', createAddressString(lat, lng));
+});
+
+L.tileLayer(
+  MAP_TILES_URL,
+  {
+    attribution: MAP_ATRIBUTION,
+  },
+).addTo(map).on('tileerror', () => {disableElements(adForm);});
+
 const offerPinGroup = L.layerGroup();
+offerPinGroup.addTo(map);
 
 const offerPinIcon = L.icon({
   iconUrl: './img/pin.svg',
@@ -72,42 +84,27 @@ const createOfferPin = (offer) => {
     .bindPopup(createBalloonContent(offer));
 };
 
-
 const putPinsToMap = () => {
   getData((dataSet) => {
     dataSet.forEach((offer) => {
+      enableElements(mapFilters);
       createOfferPin(offer);
     });
   },
-  (allertMessage) => {showAlert(allertMessage, mapContainer);}
+  (allertMessage) => {showAlert(allertMessage, mapContainer, mapFilters);}
   );
 };
+
+putPinsToMap();
 
 const resetOffersPinsLayer = () => {
   offerPinGroup.clearLayers();
   putPinsToMap();
 };
 
-const initMap = () => {
-  const leafletObj = L.map('map-canvas');
-  leafletObj.setView({
-    lat: initMapCoordinate.lat,
-    lng: initMapCoordinate.lng,
-  }, 13);
-  leafletObj.whenReady(cbMapOnLoadHandler);
-
-  mapTileLayer.addTo(leafletObj);
-  mainPin.addTo(leafletObj);
-  offerPinGroup.addTo(leafletObj);
-  leafletObj.whenReady(putPinsToMap);
-  return leafletObj;
-};
-
-const map = initMap();
-
 const setMapDefault = () => {
-  const defaultLat = initMapCoordinate.lat;
-  const defaulLng = initMapCoordinate.lng;
+  const defaultLat = initCoordinate.lat;
+  const defaulLng = initCoordinate.lng;
   map.closePopup();
   map.setView({
     lat: defaultLat,
@@ -117,10 +114,6 @@ const setMapDefault = () => {
   resetOffersPinsLayer();
 };
 
-mainPin.on('moveend', (evt) => {
-  address.setAttribute('value', `широта: ${Number(evt.target.getLatLng().lat).toFixed(6)}, долгота: ${Number(evt.target.getLatLng().lng).toFixed(6)}`);
-});
-
 mapFilters.addEventListener('change', debounce(() => {resetOffersPinsLayer();}));
 
-export { initPinCoordinate, resetOffersPinsLayer, setMapDefault };
+export { initCoordinate, setMapDefault };

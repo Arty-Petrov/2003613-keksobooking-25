@@ -1,11 +1,5 @@
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
-const CHECKIN_TIMES = ['12:00', '13:00', '14:00',];
-
-const CHECHOUT_TIMES = ['12:00', '13:00', '14:00',];
-
-const FEATURES_TYPES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner',];
-
 const LodgingProperties = {
   bungalow: {
     fieldText: 'Бунгало',
@@ -64,9 +58,6 @@ const HousingClassPrice = {
 
 export {
   FILE_TYPES,
-  CHECKIN_TIMES,
-  CHECHOUT_TIMES,
-  FEATURES_TYPES,
   LodgingProperties,
   lodgingTypesMaxPrice,
   lodgingTypesMinPrice,

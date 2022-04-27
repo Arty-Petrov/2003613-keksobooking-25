@@ -1,5 +1,10 @@
 const ALERT_SHOW_TIME = 5000;
 const TIMEOUT_DELAY_TIME = 500;
+const ACCURACY_DIGITS = 5;
+
+const fixDigitAccuracy = (digit, fractionAccuracy = ACCURACY_DIGITS) => digit.toFixed(fractionAccuracy);
+
+const createAddressString = (lat, lng) => `${fixDigitAccuracy(lat)}, долгота: ${fixDigitAccuracy(lng)}`;
 
 const getRandomPositiveInteger = (a, b) => {
   const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
@@ -44,7 +49,7 @@ const enableElements = (...elements) => {
   }
 };
 
-const showAlert = (message, element, alertShowTime = ALERT_SHOW_TIME) => {
+const showAlert = (message, element, elementToLock, alertShowTime = ALERT_SHOW_TIME) => {
   const alertContainer = document.createElement('div');
   alertContainer.style.zIndex = 999999;
   alertContainer.style.position = 'absolute';
@@ -57,6 +62,7 @@ const showAlert = (message, element, alertShowTime = ALERT_SHOW_TIME) => {
   alertContainer.style.backgroundColor = 'red';
   alertContainer.textContent = message;
   element.append(alertContainer);
+  disableElements(elementToLock);
   setTimeout(() => {
     alertContainer.remove();
   }, alertShowTime);
@@ -71,6 +77,7 @@ const debounce = (callback, timeoutDelay = TIMEOUT_DELAY_TIME) => {
 };
 
 export {
+  createAddressString,
   enableElements,
   disableElements,
   getRandomArrayRange,
